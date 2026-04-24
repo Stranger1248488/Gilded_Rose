@@ -6,55 +6,125 @@ class Item {
   }
 }
 
+const specialItem = new Set([
+  'Aged Brie',
+  'Backstage passes to a TAFKAL80ETC concert', 
+  'Sulfuras, Hand of Ragnaros'
+])
+
+function isASpecialItem(item) {
+  return specialItem.has(item)
+}
+
+function isAgedBrie(item) {
+  return (item === "Aged Brie")
+}
+
+function isBackstagePass(item) {
+  return (item === "Backstage passes to a TAFKAL80ETC concert")
+}
+
+function isSulfuras(item) {
+  return (item === "Sulfuras, Hand of Ragnaros")
+}
+
+function hasQualityAboveZero(item) {
+  return (item > 0)
+}
+
+function hasQualityBelowZero(quality) {
+  return (quality < 0)
+}
+
+function hasQualityAbove50(item) {
+  return (item > 50)
+}
+
+function hasQualityBelow50(item) {
+  return (item < 50)
+}
+
+function dropsQualityBy1(item) {
+  if (item > 0) {
+    item -= 1
+  }
+  return item
+}
+
+function addsQualityBy1(item) {
+  if (item < 50) {
+    item += 1
+  }
+  return item
+}
+
+function hasSellInBelow10Days(sellIn) {
+  return (sellIn < 11)
+}
+
+function hasSellInBelow5Days(sellIn) {
+  return (sellIn < 6)
+}
+
+function hasSellInBelow0Days(sellIn) {
+  return (sellIn < 0)
+}
+
+function dropsSellInBy1(sellIn) {
+  return sellIn -= 1
+}
+
+
 class Shop {
   constructor(items=[]){
     this.items = items;
   }
   updateQuality() {
     for (let i = 0; i < this.items.length; i++) {
-      if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-        if (this.items[i].quality > 0) {
-          if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-            this.items[i].quality = this.items[i].quality - 1;
-          }
+      let name = this.items[i].name
+      let sellIn = this.items[i].sellIn
+      let quality = this.items[i].quality
+
+      if (!isASpecialItem(name)) {
+        if (hasQualityAboveZero(quality)) {
+          quality = dropsQualityBy1(quality) 
         }
       } else {
-        if (this.items[i].quality < 50) {
-          this.items[i].quality = this.items[i].quality + 1;
-          if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].sellIn < 11) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
+        if (hasQualityBelow50) {
+          quality = addsQualityBy1(quality)
+          if (isBackstagePass(name)) {
+            if (hasSellInBelow10Days(sellIn)) {
+              quality = addsQualityBy1(quality)
             }
-            if (this.items[i].sellIn < 6) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
+            if (hasSellInBelow5Days(sellIn)) {
+              quality = addsQualityBy1(quality)
             }
           }
         }
       }
-      if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-        this.items[i].sellIn = this.items[i].sellIn - 1;
+      if (!isSulfuras(name)) {
+        sellIn = dropsSellInBy1(sellIn)
       }
-      if (this.items[i].sellIn < 0) {
-        if (this.items[i].name != 'Aged Brie') {
-          if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].quality > 0) {
-              if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].quality = this.items[i].quality - 1;
+      if (hasSellInBelow0Days(sellIn)) {
+        if (!isAgedBrie(name)) {
+          if (!isBackstagePass(name)) {
+            if (hasQualityAboveZero(quality)) {
+              if (!isSulfuras(name)) {
+                quality = dropsQualityBy1(quality);
               }
             }
           } else {
-            this.items[i].quality = this.items[i].quality - this.items[i].quality;
+            quality = 0;
           }
         } else {
-          if (this.items[i].quality < 50) {
-            this.items[i].quality = this.items[i].quality + 1;
+          if (hasQualityBelow50(quality)) {
+            quality = addsQualityBy1(quality)
           }
         }
       }
+      this.items[i].name = name
+      this.items[i].sellIn = sellIn
+      this.items[i].quality = quality
     }
 
     return this.items;

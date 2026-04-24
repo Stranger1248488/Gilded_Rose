@@ -14,10 +14,18 @@ const { Item, Shop } = require("../src/gilded_rose.js");
 // 	Quality increases by 2 when there are 10 days or less and by 3 when there are 5 days or less but
 // 	Quality drops to 0 after the concert ---------3/3 --- DONE
 
+function generateNormalItem(daysFromSellIn, value){
+  let normalItem = new Item("normal", daysFromSellIn, value); //build
+  const gildedRose = new Shop([normalItem]);
+  return gildedRose 
+}
+
+
+
+
 describe("Gilded Rose Pin Down Tests", () => {
   test("Normal items should degrade in quality by 1 each day", () => {
-    let normalItem = new Item("normal", 10, 20); //build
-    const gildedRose = new Shop([normalItem]);
+    let gildedRose = generateNormalItem(10, 20)
 
     const items = gildedRose.updateQuality(); //operate
 
@@ -25,8 +33,7 @@ describe("Gilded Rose Pin Down Tests", () => {
   });
   
   test("Normal items should denote the number of days left to sell the item",() => {
-    let normalItem = new Item("normal", 10, 20); //build
-    const gildedRose = new Shop([normalItem]);
+    let gildedRose = generateNormalItem(10, 20)
 
     const items = gildedRose.updateQuality(); //operate
 
@@ -34,8 +41,7 @@ describe("Gilded Rose Pin Down Tests", () => {
   })
 
   test("once sell by date passes, quality should degrade twice as fast", () => {
-    let normalItem = new Item("normal", 0, 20);
-    const gildedRose = new Shop([normalItem]);
+    let gildedRose = generateNormalItem(0, 20)
 
     const items = gildedRose.updateQuality();
 
@@ -43,12 +49,38 @@ describe("Gilded Rose Pin Down Tests", () => {
   })
 
   test("Normal items should never have quality fall below 0",() => {
-    let normalItem = new Item("normal", -1, 1);
-    const gildedRose = new Shop([normalItem]);
+    let gildedRose = generateNormalItem(0, 1)
 
     const items = gildedRose.updateQuality();
 
     expect(items[0].quality).toBe(0); 
+  })
+
+  test("if a normalItem pass is 2 days passed, quality should drop by 2", () => {
+    let normalItem = new Item("normal", -1, 20); //build
+    const gildedRose = new Shop([normalItem]);
+
+    const items = gildedRose.updateQuality(); //operate
+
+    expect(items[0].quality).toBe(18); //check
+  })
+
+  test("normalItem drops by 1 when 3 days past", () => {
+    let normalItem = new Item("Nore Mal", -3, 20); //build
+    const gildedRose = new Shop([normalItem]);
+
+    const items = gildedRose.updateQuality(); //operate
+
+    expect(items[0].quality).toBe(18); //check
+  })
+
+  test('sees if normalItem has negative quality', () => {
+    let normalItem = new Item("Nore Mal", 5, 0); //build
+    const gildedRose = new Shop([normalItem]);
+
+    const items = gildedRose.updateQuality(); //operate
+
+    expect(items[0].quality).toBe(0); //check
   })
 
   test("agedBrie should never grow beyond 50 in quality", () => {
@@ -150,14 +182,7 @@ describe("Gilded Rose Pin Down Tests", () => {
     expect(items[0].quality).toBe(23);
   });
 
-  test("if a normalItem pass is 2 days passed, quality should drop by 2", () => {
-    let normalItem = new Item("normal", -1, 20); //build
-    const gildedRose = new Shop([normalItem]);
 
-    const items = gildedRose.updateQuality(); //operate
-
-    expect(items[0].quality).toBe(18); //check
-  })
 
   test("agedBrie has to increase by 1", () => {
     let agedBrie = new Item("Aged Brie", -5, 20); //build
@@ -177,14 +202,7 @@ describe("Gilded Rose Pin Down Tests", () => {
     expect(items[0].quality).toBe(52); //check
   })
 
-  test("normalItem drops by 1 when 3 days past", () => {
-    let normalItem = new Item("Nore Mal", -3, 20); //build
-    const gildedRose = new Shop([normalItem]);
-
-    const items = gildedRose.updateQuality(); //operate
-
-    expect(items[0].quality).toBe(18); //check
-  })
+  
   test("backstaegPass goes up from 49 and stops at 50", () => {
     let backstagePass = new Item("Backstage passes to a TAFKAL80ETC concert", 2, 49); //build
     const gildedRose = new Shop([backstagePass]);
@@ -194,12 +212,5 @@ describe("Gilded Rose Pin Down Tests", () => {
     expect(items[0].quality).toBe(50); //check
   })
 
-  test('sees if normalItem has negative quality', () => {
-    let normalItem = new Item("Nore Mal", 5, 0); //build
-    const gildedRose = new Shop([normalItem]);
-
-    const items = gildedRose.updateQuality(); //operate
-
-    expect(items[0].quality).toBe(0); //check
-  })
+  
 });
